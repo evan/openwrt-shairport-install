@@ -26,3 +26,47 @@ echo -e "config shairport-sync 'shairport_sync'
 /etc/init.d/shairport-sync restart
 
 
+#### wireless
+
+root@OpenWrt:/etc/config# cat network
+
+config interface 'loopback'
+	option ifname 'lo'
+	option proto 'static'
+	option ipaddr '127.0.0.1'
+	option netmask '255.0.0.0'
+
+config globals 'globals'
+	option ula_prefix 'fd6e:135f:0574::/48'
+
+config interface 'lan'
+	option type 'bridge'
+	option ifname 'eth1'
+	option proto 'static'
+	option ipaddr '192.168.2.1'
+	option netmask '255.255.255.0'
+	option ip6assign '60'
+
+config interface 'wan'
+	option proto 'dhcp'
+
+config interface 'wan6'
+	option proto 'dhcpv6'
+
+root@OpenWrt:/etc/config# cat wireless
+
+config wifi-device 'radio0'
+	option type 'mac80211'
+	option channel '6'
+	option hwmode '11g'
+	option path 'platform/ar933x_wmac'
+	option htmode 'HT20'
+
+config wifi-iface
+	option network 'wan'
+	option device 'radio0'
+	option ssid 'xxx'
+	option encryption 'psk2'
+	option mode 'sta'
+	option key 'xxx'
+
