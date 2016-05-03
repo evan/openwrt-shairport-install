@@ -11,15 +11,15 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no root@192.168.2.1
 
 opkg update
 cd ~
-opkg install kmod-usb-audio kmod-sound-core nano shairport-sync-mini alsa-utils --download-only
+opkg install kmod-usb-audio kmod-sound-core nano shairport-sync-openssl --download-only
 rm -rf /tmp/opkg-lists
 opkg install *
+rm *
 
 echo -e "config shairport-sync 'shairport_sync'
 	option respawn '1'
-	option name 'Family Room'
-	option statistics 'yes' # no/yes
-	option sesctl_session_interruption 'no' # no/yes
+	option name 'Dining Room'
+	option sesctl_session_interruption 'yes' # no/yes
 	option alsa_mixer_control_name 'PCM'
 " > /etc/config/shairport-sync
 
