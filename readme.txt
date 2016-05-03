@@ -1,3 +1,5 @@
+### install chaos calmer on wr710n
+
 ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no root@192.168.1.1
 
 passwd # set password to "root"
@@ -11,9 +13,11 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no root@192.168.2.1
 
 opkg update
 cd ~
-opkg install kmod-usb-audio kmod-sound-core nano shairport-sync-openssl --download-only
+opkg install kmod-usb-audio kmod-sound-core nano libpthread alsa-lib libconfig libdaemon libpopt libopenssl libavahi-client libsoxr --download-only
 rm -rf /tmp/opkg-lists
 opkg install *
+wget http://downloads.openwrt.org/snapshots/trunk/ar71xx/generic/packages/packages/shairport-sync-openssl_2.8.2-1_ar71xx.ipk
+opkg install shairport-sync-openssl_2.8.2-1_ar71xx.ipk
 rm *
 
 echo -e "config shairport-sync 'shairport_sync'
@@ -25,8 +29,7 @@ echo -e "config shairport-sync 'shairport_sync'
 
 /etc/init.d/shairport-sync restart
 
-
-#### wireless
+#### wireless client mode
 
 root@OpenWrt:/etc/config# cat network
 
