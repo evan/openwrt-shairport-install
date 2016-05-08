@@ -70,3 +70,21 @@ config wifi-iface
 	option mode 'sta'
 	option key 'xxx'
 
+### audio loopback
+
+root@OpenWrt:/etc/init.d# cat alsa-loopback
+#!/bin/sh /etc/rc.common
+
+START=99
+STOP=1
+USE_PROCD=1
+
+start_service() {
+	procd_open_instance
+	procd_set_param command nice -n -19 ash -c 'nice -n 10 arecord -D plughw:0 -f dat --disable-softvol | nice -n -19 aplay -f cd --disable-softvol'
+	procd_set_param respawn
+	procd_close_instance
+}
+
+/etc/init.d/alsa-loopback enable
+/etc/init.d/alsa-loopback start
