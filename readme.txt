@@ -12,19 +12,40 @@ ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no root@192.168.2.1
 
 opkg update
 cd ~
-opkg install kmod-usb-audio kmod-sound-core nano shairport-sync-openssl --download-only
+opkg install kmod-usb-audio kmod-sound-core nano shairport-sync-openssl alsa-utils --download-only
 rm -rf /tmp/opkg-lists
 opkg install *
 rm *
 
 echo -e "config shairport-sync 'shairport_sync'
 	option respawn '1'
-	option name 'Playroom'
+	option name 'Master Bedroom'
 	option sesctl_session_interruption 'yes' # no/yes
 	option alsa_mixer_control_name 'PCM'
 " > /etc/config/shairport-sync
 
 /etc/init.d/shairport-sync restart
+
+### audio loopback
+
+echo "#!/bin/sh /etc/rc.common
+
+START=99
+STOP=1
+USE_PROCD=1
+
+start_service() {
+	procd_open_instance
+	procd_set_param command nice -n -19 ash -c 'nice -n 10 arecord -D plughw:0 -f dat --disable-softvol | nice -n -19 aplay -f cd --disable-softvol'
+	procd_set_param respawn
+	procd_close_instance
+}
+" > /etc/init.d/alsa-loopback
+
+chmod a+x /etc/init.d/alsa-loopback
+
+/etc/init.d/alsa-loopback enable
+/etc/init.d/alsa-loopback start
 
 ### wireless client mode
 
@@ -65,26 +86,9 @@ config wifi-device 'radio0'
 config wifi-iface
 	option network 'wan'
 	option device 'radio0'
-	option ssid 'xxx'
+	option ssid 'Blondie'
 	option encryption 'psk2'
 	option mode 'sta'
-	option key 'xxx'
+	option key 'beachball'
 
-### audio loopback
 
-root@OpenWrt:/etc/init.d# cat alsa-loopback
-#!/bin/sh /etc/rc.common
-
-START=99
-STOP=1
-USE_PROCD=1
-
-start_service() {
-	procd_open_instance
-	procd_set_param command nice -n -19 ash -c 'nice -n 10 arecord -D plughw:0 -f dat --disable-softvol | nice -n -19 aplay -f cd --disable-softvol'
-	procd_set_param respawn
-	procd_close_instance
-}
-
-/etc/init.d/alsa-loopback enable
-/etc/init.d/alsa-loopback start
