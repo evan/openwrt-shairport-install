@@ -50,13 +50,21 @@ USE_PROCD=1
 
 start_service() {
 	procd_open_instance
-	procd_set_param command nice -n -19 ash -c 'nice -n 10 arecord -D plughw:0 -f dat --disable-softvol | nice -n -19 aplay -f cd --disable-softvol'
+	procd_set_param command nice -n -19 ash -c 'nice -n 10 arecord -D plughw:0 -f cd --period-size=256 -B0 --buffer-size=1024 --disable-softvol | nice -n -19 aplay -f cd --disable-softvol'
 	procd_set_param respawn
 	procd_close_instance
+}
+
+stop_service() {
+	killall arecord
 }
 " > /etc/init.d/alsa-loopback
 
 chmod a+x /etc/init.d/alsa-loopback
 
 /etc/init.d/alsa-loopback enable
-/etc/init.d/alsa-loopback start
+/etc/init.d/alsa-loopback restart
+
+### enable spdif in
+
+amixer sset 'IEC958 In' Capture cap
