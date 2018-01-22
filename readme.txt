@@ -33,9 +33,10 @@ done
 
 echo -e "config shairport-sync 'shairport_sync'
 	option respawn '1'
-	option name 'Room Name'
+	option name 'Office'
 	option sesctl_session_interruption 'yes' # no/yes
 	option alsa_mixer_control_name 'PCM'
+	option alsa_buffer_length 22050
 " > /etc/config/shairport-sync
 
 /etc/init.d/shairport-sync restart
@@ -50,7 +51,7 @@ USE_PROCD=1
 
 start_service() {
 	procd_open_instance
-	procd_set_param command nice -n -19 ash -c 'nice -n 10 arecord -D plughw:0 -f cd --period-size=256 -B0 --buffer-size=1024 --disable-softvol | nice -n -19 aplay -f cd --disable-softvol'
+	procd_set_param command nice -n -19 ash -c 'nice -n 10 arecord -D plughw:0 -f cd --period-size=256 -B0 --buffer-size=512 --disable-softvol | nice -n -19 aplay -f cd --disable-softvol'
 	procd_set_param respawn
 	procd_close_instance
 }
@@ -63,7 +64,7 @@ stop_service() {
 chmod a+x /etc/init.d/alsa-loopback
 
 /etc/init.d/alsa-loopback enable
-/etc/init.d/alsa-loopback restart
+/etc/init.d/alsa-loopback start
 
 ### enable spdif in
 
